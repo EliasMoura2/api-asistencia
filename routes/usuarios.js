@@ -142,7 +142,7 @@ router.post('/', (req, res, next) => {
 
                 // creamos un token con el dni del usuario y la clave secreta
                 const token = jwt.sign({ dni: result[0].dni }, process.env.SECRET, {
-                  expiresIn: 60 * 60 * 1
+                  expiresIn: 60 * 60 * 1 // => expira en 1 hora
                   // 60 * 60 * 24 expira en 24 horas
                 })
 

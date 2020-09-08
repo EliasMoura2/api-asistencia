@@ -15,7 +15,7 @@ var moduloValidar = require('../middlewares/validarPassword')
 router.post('/signup', (req, res, next) => {
   // res.send('POST usuarios')
   const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where dni = ${req.body.dni}`
-  connection.query(sql, async (error, result) => {
+  connection.query(sql, (error, result) => {
     if (error) {
       throw error
     }
@@ -75,7 +75,7 @@ router.post('/signup', (req, res, next) => {
 
                 // creamos un token con el dni del usuario y la clave secreta
                 const token = jwt.sign({ dni: result[0].dni }, process.env.SECRET, {
-                  expiresIn: 60 * 60 * 1
+                  expiresIn: 60 * 60 * 1 // => expira en 1 hora
                   // 60 * 60 * 24 expira en 24 horas
                 })
 
@@ -115,8 +115,8 @@ router.post('/signin', (req, res, next) => {
       } else {
         // console.log('Es la misma pass')
         const token = jwt.sign({ dni: result[0].dni }, process.env.SECRET, {
-          expiresIn: 60 * 60 * 1
-          // 60 * 60 * 24 expira en 24 horas
+          expiresIn: 60 * 60 * 1 // => expira en 1 hora
+          // 60 * 60 * 24 => expira en 24 horas
         })
 
         // una vez validado la password devolvemos los datos del usuario y el token
