@@ -8,7 +8,6 @@ const connection = require('../database')
 const encriptarPassword = require('../middlewares/encriptar')
 const formatearTexto = require('../middlewares/formatear')
 const validarPassword = require('../middlewares/validarPassword')
-const verificarToken = require('../middlewares/verificarToken')
 
 // =========================================================
 // SIGN UP
