@@ -5,9 +5,10 @@ const connection = require('../database')
 // =========================================================
 // MIDDLEWARES
 // =========================================================
-var moduloEncriptar = require('../middlewares/encriptar')
-var moduloFormatear = require('../middlewares/formatear')
-var moduloValidar = require('../middlewares/validarPassword')
+const encriptarPassword = require('../middlewares/encriptar')
+const formatearTexto = require('../middlewares/formatear')
+const validarPassword = require('../middlewares/validarPassword')
+const verificarToken = require('../middlewares/verificarToken')
 
 // =========================================================
 // SIGN UP
@@ -34,16 +35,16 @@ router.post('/signup', (req, res, next) => {
 
           // utilizamos el modulo que tiene la funcion para formatear el nombre
           // console.log(req.body.nombre)
-          const nombreMayus = await moduloFormatear.formatear(req.body.nombre)
+          const nombreMayus = await formatearTexto(req.body.nombre)
           // console.log(nombreMayus)
 
           // utilizamos el modulo que tiene la funcion para formatear el apellido
           // console.log(req.body.apellido)
-          const apellidoMayus = await moduloFormatear.formatear(req.body.apellido)
+          const apellidoMayus = await formatearTexto(req.body.apellido)
           // console.log(apellidoMayus)
 
           // utilizamos el modulo que tiene la funcion para encriptar una password
-          const pass = await moduloEncriptar.encriptar(req.body.clave)
+          const pass = await encriptarPassword(req.body.clave)
 
           const usuarioObj = {
             nombre: nombreMayus,
@@ -108,7 +109,7 @@ router.post('/signin', (req, res, next) => {
     if (result.length > 0) {
       // Existe el nombre usuario
       // debemos comparar la clave provista con la clave de la BD, retorna True or False
-      var passIsValid = await moduloValidar.validar(clave, result[0].clave)
+      var passIsValid = await validarPassword(clave, result[0].clave)
       if (!passIsValid) {
         // console.log('No es la misma pass')
         res.status(401).json({ auth: false, token: null })

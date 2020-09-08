@@ -5,8 +5,8 @@ const connection = require('../database')
 // =========================================================
 // MIDDLEWARES
 // =========================================================
-var encriptarPassword = require('../middlewares/encriptar')
-var formatearTexto = require('../middlewares/formatear')
+const encriptarPassword = require('../middlewares/encriptar')
+const formatearTexto = require('../middlewares/formatear')
 const verificarToken = require('../middlewares/verificarToken')
 // =========================================================
 // OBTENER TODOS LOS USUARIOS
