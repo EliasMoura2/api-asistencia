@@ -2,7 +2,7 @@ const { Router } = require('express')
 const router = Router()
 const connection = require('../database')
 // =========================================================
-// FUNCIONES
+// MIDDLEWARES
 // =========================================================
 var formatearTexto = require('../middlewares/formatear')
 const verificarToken = require('../middlewares/verificarToken')

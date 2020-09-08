@@ -1,8 +1,15 @@
 const { Router } = require('express')
 const router = Router()
 const connection = require('../database')
+// =========================================================
+// MIDDLEWARES
+// =========================================================
+const verificarToken = require('../middlewares/verificarToken')
 
-router.get('/', (req, res) => {
+// =========================================================
+// OBTENER TODAS LAS MARCADAS
+// =========================================================
+router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
   const sql = 'SELECT * FROM asistencia2.marcada'
   connection.query(sql, (error, results) => {
@@ -12,12 +19,16 @@ router.get('/', (req, res) => {
     if (results.length > 0) {
       res.json(results)
     } else {
-      res.send('Not result')
+      res.send('No hay resultados')
     }
   })
 })
 
-router.get('/:id', (req, res) => {
+// =========================================================
+// OBTENER UNA INSTITUCION
+// =========================================================
+// /:id => id de la marcada
+router.get('/:id', verificarToken, (req, res, next) => {
   //  res.send('GET usuario')
   const { id } = req.params
   const sql = `SELECT * FROM asistencia2.marcada where id_marcada = ${id}`
@@ -28,12 +39,15 @@ router.get('/:id', (req, res) => {
     if (result.length > 0) {
       res.json(result)
     } else {
-      res.send('Not result')
+      return res.status(404).send('Marcada no encontrada')
     }
   })
 })
 
-router.post('/', (req, res) => {
+// =========================================================
+// CREAR UNA MARCADA
+// =========================================================
+router.post('/', verificarToken, (req, res, next) => {
   // res.send('POST usuarios')
   var date = new Date()
   var hora = `${date.getHours()} : ${date.getMinutes()} : ${date.getSeconds()}`
@@ -56,7 +70,11 @@ router.post('/', (req, res) => {
   })
 })
 
-router.put('/:id', (req, res) => {
+// =========================================================
+// ACTUALIZAR UNA INSTITUCION
+// =========================================================
+// /:id => id de la marcada
+router.put('/:id', verificarToken, (req, res, next) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { hora, geolocalizacion, observacion, id_asistencia, id_institucion, id_estado_marcada } = req.body
@@ -70,7 +88,11 @@ router.put('/:id', (req, res) => {
   })
 })
 
-router.delete('/:id', (req, res) => {
+// =========================================================
+// ELIMINAR UNA INSTITUCION
+// =========================================================
+// /:id => id de la marcada
+router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
   const sql = `DELETE FROM asistencia2.marcada WHERE id_marcada = ${id}`
