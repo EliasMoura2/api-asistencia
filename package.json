@@ -4,11 +4,12 @@
   "description": "api Rest NodeJs, Mysql",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TeamDevRobotica/api-asistencia2021.git"
+    "url": "git+https://github.com/EliasMoura2/api-asistencia.git"
   },
   "keywords": [
     "NodeJS",
@@ -18,9 +19,9 @@
   "author": "Equipo de desarrollo - Escuela de Robotica",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/TeamDevRobotica/api-asistencia2021.git/issues"
+    "url": "https://github.com/EliasMoura2/api-asistencia.git/issues"
   },
-  "homepage": "https://github.com/TeamDevRobotica/api-asistencia2021.git#readme",
+  "homepage": "https://github.com/EliasMoura2/api-asistencia.git#readme",
   "devDependencies": {
     "nodemon": "^2.0.4"
   },

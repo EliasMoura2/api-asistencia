@@ -3,12 +3,15 @@ const router = Router()
 const jwt = require('jsonwebtoken')
 const connection = require('../database')
 // =========================================================
-// FUNCIONES
+// MIDDLEWARES
 // =========================================================
 var moduloEncriptar = require('../middlewares/encriptar')
 var moduloFormatear = require('../middlewares/formatear')
 var moduloValidar = require('../middlewares/validarPassword')
 
+// =========================================================
+// SIGN UP
+// =========================================================
 router.post('/signup', (req, res, next) => {
   // res.send('POST usuarios')
   const sql = `SELECT * FROM asistencia2.usuario where dni = ${req.body.dni}`
@@ -89,6 +92,9 @@ router.post('/signup', (req, res, next) => {
   })
 })
 
+// =========================================================
+// SIGN IN
+// =========================================================
 router.post('/signin', (req, res, next) => {
   // res.json('signin')
   const { nombreUsuario, clave } = req.body
@@ -109,8 +115,8 @@ router.post('/signin', (req, res, next) => {
       } else {
         // console.log('Es la misma pass')
         const token = jwt.sign({ dni: result[0].dni }, process.env.SECRET, {
-          expiresIn: 60 * 60 * 24
-          // expira en 24 horas
+          expiresIn: 60 * 60 * 1
+          // 60 * 60 * 24 expira en 24 horas
         })
 
         // una vez validado la password devolvemos los datos del usuario y el token
