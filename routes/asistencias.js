@@ -1,8 +1,14 @@
 const { Router } = require('express')
 const router = Router()
 const connection = require('../database')
-
-router.get('/', (req, res) => {
+// =========================================================
+// MIDDLEWARES
+// =========================================================
+const verificarToken = require('../middlewares/verificarToken')
+// =========================================================
+// OBTENER TODOS LAS ASISTENCIAS
+// =========================================================
+router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
   const sql = 'SELECT * FROM asistencia2.asistencia'
   connection.query(sql, (error, results) => {
@@ -12,12 +18,17 @@ router.get('/', (req, res) => {
     if (results.length > 0) {
       res.json(results)
     } else {
-      res.send('Not result')
+      res.send('No hay resultados')
     }
   })
 })
 
-router.get('/:id', (req, res) => {
+// =========================================================
+// OBTENER UNA ASISTENCIA
+// =========================================================
+// /:id => id de la asistencia
+
+router.get('/:id', verificarToken, (req, res, next) => {
   //  res.send('GET usuario')
   const { id } = req.params
   const sql = `SELECT * FROM asistencia2.asistencia where id_asistencia = ${id}`
@@ -28,12 +39,15 @@ router.get('/:id', (req, res) => {
     if (result.length > 0) {
       res.json(result)
     } else {
-      res.send('Not result')
+      res.send('Asistencia no encontrada')
     }
   })
 })
 
-router.post('/', (req, res) => {
+// =========================================================
+// CREAR UNA ASISTENCIA
+// =========================================================
+router.post('/', verificarToken, (req, res, next) => {
   // res.send('POST usuarios')
   const date = new Date()
   const fecha = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
@@ -63,7 +77,11 @@ router.post('/', (req, res) => {
   })
 })
 
-router.put('/:id', (req, res) => {
+// =========================================================
+// ACTUALIZAR UNA ASISTENCIA
+// =========================================================
+// /:id => id de la asistencia
+router.put('/:id', verificarToken, (req, res, next) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { fecha } = req.body
@@ -77,7 +95,11 @@ router.put('/:id', (req, res) => {
   })
 })
 
-router.delete('/:id', (req, res) => {
+// =========================================================
+// ELIMINAR UNA ASISTENCIA
+// =========================================================
+// /:id => id de la asistencia a eliminar
+router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
   const sql = `DELETE FROM asistencia2.asistencia WHERE id_asistencia = ${id}`

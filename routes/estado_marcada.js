@@ -1,8 +1,15 @@
 const { Router } = require('express')
 const router = Router()
 const connection = require('../database')
-
-router.get('/', (req, res) => {
+// =========================================================
+// MIDDLEWARES
+// =========================================================
+var formatearTexto = require('../middlewares/formatear')
+const verificarToken = require('../middlewares/verificarToken')
+// =========================================================
+// OBTENER TODOS LAS MARCADAS
+// =========================================================
+router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
   const sql = 'SELECT * FROM asistencia2.estado_marcada'
   connection.query(sql, (error, results) => {
@@ -17,7 +24,11 @@ router.get('/', (req, res) => {
   })
 })
 
-router.get('/:id', (req, res) => {
+// =========================================================
+// OBTENER UNA MARCADA
+// =========================================================
+// /:id => id de la marcada
+router.get('/:id', verificarToken, (req, res, next) => {
   //  res.send('GET usuario')
   const { id } = req.params
   const sql = `SELECT * FROM asistencia2.estado_marcada where id_estado_marcada = ${id}`
@@ -33,15 +44,15 @@ router.get('/:id', (req, res) => {
   })
 })
 
-router.post('/', (req, res) => {
+// =========================================================
+// CREAR UNA MARCADA
+// =========================================================
+router.post('/', verificarToken, async (req, res, next) => {
   // res.send('POST usuarios')
   // obtenemos el valor del estado
-  let estado = req.body.estado
-  // eliminamos los espacios
-  estado = estado.trim()
-  // lo pasamos a mayusculas
-  const estadoMayus = estado.toUpperCase()
-
+  // utilizamos el modulo que tiene la funcion para formatear el estado
+  // console.log(req.body.nombre)
+  const estadoMayus = await formatearTexto(req.body.estado)
   const sql = `SELECT * FROM asistencia2.estado_marcada where dni = ${estadoMayus}`
   connection.query(sql, (error, result) => {
     if (error) {
@@ -66,7 +77,11 @@ router.post('/', (req, res) => {
   })
 })
 
-router.put('/:id', (req, res) => {
+// =========================================================
+// ACTUALIZAR UNA MARCADA
+// =========================================================
+// /:id => id de la marcada
+router.put('/:id', verificarToken, (req, res, next) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { estado } = req.body
@@ -80,7 +95,11 @@ router.put('/:id', (req, res) => {
   })
 })
 
-router.delete('/:id', (req, res) => {
+// =========================================================
+// ELIMINAR UNA MARCADA
+// =========================================================
+// /:id => id de la marcada
+router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
   const sql = `DELETE FROM asistencia2.estado_marcada WHERE id_estado_marcada = ${id}`

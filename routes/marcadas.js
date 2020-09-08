@@ -25,7 +25,7 @@ router.get('/', verificarToken, (req, res, next) => {
 })
 
 // =========================================================
-// OBTENER UNA INSTITUCION
+// OBTENER UNA MARCADA
 // =========================================================
 // /:id => id de la marcada
 router.get('/:id', verificarToken, (req, res, next) => {
@@ -71,7 +71,7 @@ router.post('/', verificarToken, (req, res, next) => {
 })
 
 // =========================================================
-// ACTUALIZAR UNA INSTITUCION
+// ACTUALIZAR UNA MARCADA
 // =========================================================
 // /:id => id de la marcada
 router.put('/:id', verificarToken, (req, res, next) => {
@@ -89,7 +89,7 @@ router.put('/:id', verificarToken, (req, res, next) => {
 })
 
 // =========================================================
-// ELIMINAR UNA INSTITUCION
+// ELIMINAR UNA MARCADA
 // =========================================================
 // /:id => id de la marcada
 router.delete('/:id', verificarToken, (req, res, next) => {

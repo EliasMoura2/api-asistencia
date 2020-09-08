@@ -3,7 +3,7 @@ const router = Router()
 const jwt = require('jsonwebtoken')
 const connection = require('../database')
 // =========================================================
-// FUNCIONES
+// MIDDLEWARES
 // =========================================================
 var encriptarPassword = require('../middlewares/encriptar')
 var formatearTexto = require('../middlewares/formatear')
