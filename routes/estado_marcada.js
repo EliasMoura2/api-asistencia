@@ -11,7 +11,7 @@ const verificarToken = require('../middlewares/verificarToken')
 // =========================================================
 router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
-  const sql = 'SELECT * FROM asistencia2.estado_marcada'
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.estado_marcada`
   connection.query(sql, (error, results) => {
     if (error) {
       throw error
@@ -31,7 +31,7 @@ router.get('/', verificarToken, (req, res, next) => {
 router.get('/:id', verificarToken, (req, res, next) => {
   //  res.send('GET usuario')
   const { id } = req.params
-  const sql = `SELECT * FROM asistencia2.estado_marcada where id_estado_marcada = ${id}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.estado_marcada where id_estado_marcada = ${id}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -53,7 +53,7 @@ router.post('/', verificarToken, async (req, res, next) => {
   // utilizamos el modulo que tiene la funcion para formatear el estado
   // console.log(req.body.nombre)
   const estadoMayus = await formatearTexto(req.body.estado)
-  const sql = `SELECT * FROM asistencia2.estado_marcada where dni = ${estadoMayus}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.estado_marcada where dni = ${estadoMayus}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -61,7 +61,7 @@ router.post('/', verificarToken, async (req, res, next) => {
     if (result.length > 0) {
       res.send('El estado de la marcada con la descripcion proporcionada ya se encuentra registrado')
     } else {
-      const sql = 'INSERT INTO asistencia2.estado_marcada SET ?'
+      const sql = `INSERT INTO ${process.env.NAME_DB}.estado_marcada SET ?`
 
       const estadoMarcadaObj = {
         estado: estadoMayus
@@ -85,7 +85,7 @@ router.put('/:id', verificarToken, (req, res, next) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { estado } = req.body
-  const sql = `UPDATE asistencia2.estado_marcada SET estado = '${estado}' WHERE id_estado_marcada = ${id}`
+  const sql = `UPDATE ${process.env.NAME_DB}.estado_marcada SET estado = '${estado}' WHERE id_estado_marcada = ${id}`
 
   connection.query(sql, (error) => {
     if (error) {
@@ -102,7 +102,7 @@ router.put('/:id', verificarToken, (req, res, next) => {
 router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
-  const sql = `DELETE FROM asistencia2.estado_marcada WHERE id_estado_marcada = ${id}`
+  const sql = `DELETE FROM ${process.env.NAME_DB}.estado_marcada WHERE id_estado_marcada = ${id}`
 
   connection.query(sql, (error) => {
     if (error) {

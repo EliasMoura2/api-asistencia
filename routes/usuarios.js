@@ -28,7 +28,7 @@ router.get('/', verificarToken, (req, res, next) => {
   // const decoded = jwt.verify(token, process.env.SECRET)
   // console.log(decoded)
   // Query
-  const sql = 'SELECT * FROM asistencia2.usuario'
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario`
   // 'SELECT id_usuario as id, nombre, apellido, dni as DNI, nombreUsuario as nick FROM asistencia2.usuario'
   connection.query(sql, (error, results) => {
     if (error) {
@@ -62,7 +62,7 @@ router.get('/:id', verificarToken, (req, res) => {
   // const decoded = jwt.verify(token, process.env.SECRET)
   // console.log(decoded)
   // Query
-  const sql = `SELECT * FROM asistencia2.usuario where dni = ${id}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where dni = ${id}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -81,7 +81,7 @@ router.get('/:id', verificarToken, (req, res) => {
 // =========================================================
 router.post('/', (req, res, next) => {
   // res.send('POST usuarios')
-  const sql = `SELECT * FROM asistencia2.usuario where dni = ${req.body.dni}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where dni = ${req.body.dni}`
   connection.query(sql, async (error, result) => {
     if (error) {
       throw error
@@ -89,7 +89,7 @@ router.post('/', (req, res, next) => {
     if (result.length > 0) {
       res.send('El dni ya se encuentra registrado')
     } else {
-      const sql = `SELECT * FROM asistencia2.usuario where nombreUsuario = '${req.body.nombreUsuario}'`
+      const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where nombreUsuario = '${req.body.nombreUsuario}'`
       connection.query(sql, async (error, result) => {
         if (error) {
           throw error
@@ -97,7 +97,7 @@ router.post('/', (req, res, next) => {
         if (result.length > 0) {
           res.send('El nombre de usuario ya se encuentra registrado seleccione otro')
         } else {
-          const sql = 'INSERT INTO asistencia2.usuario SET ?'
+          const sql = `INSERT INTO ${process.env.NAME_DB}.usuario SET ?`
 
           // utilizamos el modulo que tiene la funcion para formatear el nombre
           // console.log(req.body.nombre)
@@ -129,7 +129,7 @@ router.post('/', (req, res, next) => {
             // mostramos en consola el json del cliente
             // console.log(usuarioObj);
             // res.send('Usuario creado!')
-            const sql = `SELECT * FROM asistencia2.usuario where dni = ${req.body.dni}`
+            const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where dni = ${req.body.dni}`
             connection.query(sql, (error, result) => {
               if (error) {
                 throw error
@@ -184,7 +184,7 @@ router.put('/:id', verificarToken, async (req, res) => {
   // utilizamos el modulo que tiene la funcion para encriptar una password
   const pass = await encriptarPassword(clave)
 
-  const sql = `UPDATE asistencia2.usuario SET nombre = '${nombre}', apellido = '${apellido}', dni = '${dni}', nombreUsuario = '${nombreUsuario}', clave = '${pass}', imei = '${imei}', id_rol = '${id_rol}' WHERE dni = '${id}'`
+  const sql = `UPDATE ${process.env.NAME_DB}.usuario SET nombre = '${nombre}', apellido = '${apellido}', dni = '${dni}', nombreUsuario = '${nombreUsuario}', clave = '${pass}', imei = '${imei}', id_rol = '${id_rol}' WHERE dni = '${id}'`
   connection.query(sql, (error) => {
     if (error) {
       throw error
@@ -224,14 +224,14 @@ router.delete('/:id', verificarToken, (req, res, next) => {
   // console.log(decoded)
 
   // Query
-  const sql = `SELECT * FROM asistencia2.usuario WHERE dni = ${id}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario WHERE dni = ${id}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
     }
 
     if (result.length > 0) {
-      const sql = `DELETE FROM asistencia2.usuario WHERE dni = ${id}`
+      const sql = `DELETE FROM ${process.env.NAME_DB}.usuario WHERE dni = ${id}`
       connection.query(sql, (error) => {
         if (error) {
           throw error

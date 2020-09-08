@@ -11,7 +11,7 @@ const verificarToken = require('../middlewares/verificarToken')
 // =========================================================
 router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
-  const sql = 'SELECT * FROM asistencia2.institucion'
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.institucion`
   connection.query(sql, (error, results) => {
     if (error) {
       throw error
@@ -30,7 +30,7 @@ router.get('/', verificarToken, (req, res, next) => {
 // /:id => cue de la institucion
 router.get('/:id', verificarToken, (req, res, next) => {
   const { id } = req.params
-  const sql = `SELECT * FROM asistencia2.institucion where cue = ${id}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.institucion where cue = ${id}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -48,7 +48,7 @@ router.get('/:id', verificarToken, (req, res, next) => {
 // =========================================================
 router.post('/', verificarToken, (req, res, next) => {
   // res.send('POST usuarios')
-  const sql = `SELECT * FROM asistencia2.institucion where cue = ${req.body.cue}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.institucion where cue = ${req.body.cue}`
   connection.query(sql, async (error, result) => {
     if (error) {
       throw error
@@ -56,7 +56,7 @@ router.post('/', verificarToken, (req, res, next) => {
     if (result.length > 0) {
       res.send('La institucion con el cue proporcionado ya se encuentra registrada')
     } else {
-      const sql = 'INSERT INTO asistencia2.institucion SET ?'
+      const sql = `INSERT INTO ${process.env.NAME_DB}.institucion SET ?`
 
       // utilizamos el modulo que tiene la funcion para formatear el nombre
       // console.log(req.body.nombre)
@@ -88,7 +88,7 @@ router.put('/:id', verificarToken, (req, res) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { nombre, sigla, cue, geolocalizacion, direccionCalle, direccionAltura } = req.body
-  const sql = `UPDATE asistencia2.institucion SET nombre = '${nombre}', sigla = '${sigla}', cue = '${cue}', geolocalizacion = '${geolocalizacion}', direccionCalle = '${direccionCalle}', direccionAltura = '${direccionAltura}' WHERE cue = '${id}'`
+  const sql = `UPDATE ${process.env.NAME_DB}.institucion SET nombre = '${nombre}', sigla = '${sigla}', cue = '${cue}', geolocalizacion = '${geolocalizacion}', direccionCalle = '${direccionCalle}', direccionAltura = '${direccionAltura}' WHERE cue = '${id}'`
 
   connection.query(sql, (error) => {
     if (error) {
@@ -106,14 +106,14 @@ router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
   // Query
-  const sql = `SELECT * FROM asistencia2.institucion WHERE cue = '${id}'`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.institucion WHERE cue = '${id}'`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
     }
 
     if (result.length > 0) {
-      const sql = `DELETE FROM asistencia2.institucion WHERE cue = '${id}'`
+      const sql = `DELETE FROM ${process.env.NAME_DB}.institucion WHERE cue = '${id}'`
 
       connection.query(sql, (error) => {
         if (error) {

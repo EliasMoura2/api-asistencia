@@ -10,7 +10,7 @@ const verificarToken = require('../middlewares/verificarToken')
 // =========================================================
 router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
-  const sql = 'SELECT * FROM asistencia2.asistencia'
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.asistencia`
   connection.query(sql, (error, results) => {
     if (error) {
       throw error
@@ -31,7 +31,7 @@ router.get('/', verificarToken, (req, res, next) => {
 router.get('/:id', verificarToken, (req, res, next) => {
   //  res.send('GET usuario')
   const { id } = req.params
-  const sql = `SELECT * FROM asistencia2.asistencia where id_asistencia = ${id}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.asistencia where id_asistencia = ${id}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -52,7 +52,7 @@ router.post('/', verificarToken, (req, res, next) => {
   const date = new Date()
   const fecha = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
 
-  const sql = `SELECT * FROM asistencia2.asistencia where fecha = '${fecha}'`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.asistencia where fecha = '${fecha}'`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -60,7 +60,7 @@ router.post('/', verificarToken, (req, res, next) => {
     if (result.length > 0) {
       res.send('La asistencia para la fecha ya se encuentra registrada')
     } else {
-      const sql = 'INSERT INTO asistencia2.asistencia SET ?'
+      const sql = `INSERT INTO ${process.env.NAME_DB}.asistencia SET ?`
 
       const asistenciaObj = {
         fecha: fecha,
@@ -85,7 +85,7 @@ router.put('/:id', verificarToken, (req, res, next) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { fecha } = req.body
-  const sql = `UPDATE asistencia2.asistencia SET fecha = '${fecha}' WHERE id_asistencia = ${id}`
+  const sql = `UPDATE ${process.env.NAME_DB}.asistencia SET fecha = '${fecha}' WHERE id_asistencia = ${id}`
 
   connection.query(sql, (error) => {
     if (error) {
@@ -102,7 +102,7 @@ router.put('/:id', verificarToken, (req, res, next) => {
 router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
-  const sql = `DELETE FROM asistencia2.asistencia WHERE id_asistencia = ${id}`
+  const sql = `DELETE FROM ${process.env.NAME_DB}.asistencia WHERE id_asistencia = ${id}`
 
   connection.query(sql, (error) => {
     if (error) {

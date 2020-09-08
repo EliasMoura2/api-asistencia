@@ -11,7 +11,7 @@ const verificarToken = require('../middlewares/verificarToken')
 // =========================================================
 router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
-  const sql = 'SELECT * FROM asistencia2.rol_usuario'
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.rol_usuario`
   connection.query(sql, (error, results) => {
     if (error) {
       throw error
@@ -31,7 +31,7 @@ router.get('/', verificarToken, (req, res, next) => {
 router.get('/:id', verificarToken, (req, res, next) => {
   //  res.send('GET usuario')
   const { id } = req.params
-  const sql = `SELECT * FROM asistencia2.rol_usuario where id_rol = ${id}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.rol_usuario where id_rol = ${id}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -53,7 +53,7 @@ router.post('/', verificarToken, async (req, res, next) => {
   // console.log(req.body.nombre)
   const descripcionMayus = await formatearTexto(req.body.descripcion)
 
-  const sql = `SELECT * FROM asistencia2.rol_usuario where descripcion = '${descripcionMayus}'`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.rol_usuario where descripcion = '${descripcionMayus}'`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -61,7 +61,7 @@ router.post('/', verificarToken, async (req, res, next) => {
     if (result.length > 0) {
       res.send('El rol ya se encuentra registrado')
     } else {
-      const sql = 'INSERT INTO asistencia2.rol_usuario SET ?'
+      const sql = `INSERT INTO ${process.env.NAME_DB}.rol_usuario SET ?`
 
       const rolObj = {
         descripcion: descripcionMayus
@@ -84,7 +84,7 @@ router.put('/:id', verificarToken, (req, res, next) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { descripcion } = req.body
-  const sql = `UPDATE asistencia2.rol_usuario SET descripcion = '${descripcion}' WHERE id_rol = ${id}`
+  const sql = `UPDATE ${process.env.NAME_DB}.rol_usuario SET descripcion = '${descripcion}' WHERE id_rol = ${id}`
 
   connection.query(sql, (error) => {
     if (error) {
@@ -101,14 +101,14 @@ router.put('/:id', verificarToken, (req, res, next) => {
 router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
-  const sql = `SELECT * FROM asistencia2.rol_usuario WHERE id_rol = '${id}'`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.rol_usuario WHERE id_rol = '${id}'`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
     }
 
     if (result.length > 0) {
-      const sql = `DELETE FROM asistencia2.rol_usuario WHERE id_rol = '${id}'`
+      const sql = `DELETE FROM ${process.env.NAME_DB}.rol_usuario WHERE id_rol = '${id}'`
 
       connection.query(sql, (error) => {
         if (error) {

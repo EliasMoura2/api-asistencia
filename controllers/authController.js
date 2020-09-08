@@ -14,7 +14,7 @@ var moduloValidar = require('../middlewares/validarPassword')
 // =========================================================
 router.post('/signup', (req, res, next) => {
   // res.send('POST usuarios')
-  const sql = `SELECT * FROM asistencia2.usuario where dni = ${req.body.dni}`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where dni = ${req.body.dni}`
   connection.query(sql, async (error, result) => {
     if (error) {
       throw error
@@ -22,7 +22,7 @@ router.post('/signup', (req, res, next) => {
     if (result.length > 0) {
       res.send('El dni ya se encuentra registrado')
     } else {
-      const sql = `SELECT * FROM asistencia2.usuario where nombreUsuario = '${req.body.nombreUsuario}'`
+      const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where nombreUsuario = '${req.body.nombreUsuario}'`
       connection.query(sql, async (error, result) => {
         if (error) {
           throw error
@@ -30,7 +30,7 @@ router.post('/signup', (req, res, next) => {
         if (result.length > 0) {
           res.send('El nombre de usuario ya se encuentra registrado seleccione otro')
         } else {
-          const sql = 'INSERT INTO asistencia2.usuario SET ?'
+          const sql = `INSERT INTO ${process.env.NAME_DB}.usuario SET ?`
 
           // utilizamos el modulo que tiene la funcion para formatear el nombre
           // console.log(req.body.nombre)
@@ -62,7 +62,7 @@ router.post('/signup', (req, res, next) => {
             // mostramos en consola el json del cliente
             // console.log(usuarioObj);
             // res.send('Usuario creado!')
-            const sql = `SELECT * FROM asistencia2.usuario where dni = ${req.body.dni}`
+            const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where dni = ${req.body.dni}`
             connection.query(sql, (error, result) => {
               if (error) {
                 throw error
@@ -98,7 +98,7 @@ router.post('/signup', (req, res, next) => {
 router.post('/signin', (req, res, next) => {
   // res.json('signin')
   const { nombreUsuario, clave } = req.body
-  const sql = `SELECT * FROM asistencia2.usuario where nombreUsuario = '${nombreUsuario}'`
+  const sql = `SELECT * FROM ${process.env.NAME_DB}.usuario where nombreUsuario = '${nombreUsuario}'`
   // podriamos agregar el email
   connection.query(sql, async (error, result) => {
     if (error) {
