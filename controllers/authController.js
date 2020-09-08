@@ -17,63 +17,73 @@ router.post('/signup', (req, res, next) => {
       throw error
     }
     if (result.length > 0) {
-      res.send('El usuario con el dni proporcionado ya se encuentra registrado')
+      res.send('El dni ya se encuentra registrado')
     } else {
-      const sql = 'INSERT INTO asistencia2.usuario SET ?'
-
-      // utilizamos el modulo que tiene la funcion para formatear el nombre
-      // console.log(req.body.nombre)
-      const nombreMayus = await moduloFormatear.formatear(req.body.nombre)
-      // console.log(nombreMayus)
-
-      // utilizamos el modulo que tiene la funcion para formatear el apellido
-      // console.log(req.body.apellido)
-      const apellidoMayus = await moduloFormatear.formatear(req.body.apellido)
-      // console.log(apellidoMayus)
-
-      // utilizamos el modulo que tiene la funcion para encriptar una password
-      const pass = await moduloEncriptar.encriptar(req.body.clave)
-
-      const usuarioObj = {
-        nombre: nombreMayus,
-        apellido: apellidoMayus,
-        dni: req.body.dni,
-        nombreUsuario: req.body.nombreUsuario,
-        clave: pass,
-        imei: req.body.imei,
-        id_rol: req.body.id_rol
-      }
-
-      connection.query(sql, usuarioObj, (error) => {
+      const sql = `SELECT * FROM asistencia2.usuario where nombreUsuario = '${req.body.nombreUsuario}'`
+      connection.query(sql, async (error, result) => {
         if (error) {
           throw error
         }
-        // mostramos en consola el json del cliente
-        // console.log(usuarioObj);
-        // res.send('Usuario creado!')
-        const sql = `SELECT * FROM asistencia2.usuario where dni = ${req.body.dni}`
-        connection.query(sql, (error, result) => {
-          if (error) {
-            throw error
-          }
-          if (result.length > 0) {
-            // responde el json del usuario
-            // res.json(result)
-            // obtenemos el valor del dni del usuario creado
-            // console.log(result[0].dni)
+        if (result.length > 0) {
+          res.send('El nombre de usuario ya se encuentra registrado seleccione otro')
+        } else {
+          const sql = 'INSERT INTO asistencia2.usuario SET ?'
 
-            // creamos un token con el dni del usuario y la clave secreta
-            const token = jwt.sign({ dni: result[0].dni }, process.env.SECRET, {
-              expiresIn: 60 * 60 * 24
-              //expira en 24 horas
+          // utilizamos el modulo que tiene la funcion para formatear el nombre
+          // console.log(req.body.nombre)
+          const nombreMayus = await moduloFormatear.formatear(req.body.nombre)
+          // console.log(nombreMayus)
+
+          // utilizamos el modulo que tiene la funcion para formatear el apellido
+          // console.log(req.body.apellido)
+          const apellidoMayus = await moduloFormatear.formatear(req.body.apellido)
+          // console.log(apellidoMayus)
+
+          // utilizamos el modulo que tiene la funcion para encriptar una password
+          const pass = await moduloEncriptar.encriptar(req.body.clave)
+
+          const usuarioObj = {
+            nombre: nombreMayus,
+            apellido: apellidoMayus,
+            dni: req.body.dni,
+            nombreUsuario: req.body.nombreUsuario,
+            clave: pass,
+            imei: req.body.imei,
+            id_rol: req.body.id_rol
+          }
+
+          connection.query(sql, usuarioObj, (error) => {
+            if (error) {
+              throw error
+            }
+            // mostramos en consola el json del cliente
+            // console.log(usuarioObj);
+            // res.send('Usuario creado!')
+            const sql = `SELECT * FROM asistencia2.usuario where dni = ${req.body.dni}`
+            connection.query(sql, (error, result) => {
+              if (error) {
+                throw error
+              }
+              if (result.length > 0) {
+                // responde el json del usuario
+                // res.json(result)
+                // obtenemos el valor del dni del usuario creado
+                // console.log(result[0].dni)
+
+                // creamos un token con el dni del usuario y la clave secreta
+                const token = jwt.sign({ dni: result[0].dni }, process.env.SECRET, {
+                  expiresIn: 60 * 60 * 1
+                  // 60 * 60 * 24 expira en 24 horas
+                })
+
+                // despues de crear al usuario devolvemos los datos del usuario y el token
+                res.json({ result: result, auth: true, token })
+              } else {
+                res.send('Not result')
+              }
             })
-
-            // despues de crear al usuario devolvemos los datos del usuario y el token
-            res.json({ result: result, auth: true, token })
-          } else {
-            res.send('Not result')
-          }
-        })
+          })
+        }
       })
     }
   })

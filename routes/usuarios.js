@@ -5,8 +5,8 @@ const connection = require('../database')
 // =========================================================
 // FUNCIONES
 // =========================================================
-var moduloEncriptar = require('../middlewares/encriptar')
-var moduloFormatear = require('../middlewares/formatear')
+var encriptarPassword = require('../middlewares/encriptar')
+var formatearTexto = require('../middlewares/formatear')
 const verificarToken = require('../middlewares/verificarToken')
 // =========================================================
 // OBTENER TODOS LOS USUARIOS
@@ -37,7 +37,7 @@ router.get('/', verificarToken, (req, res, next) => {
     if (results.length > 0) {
       res.json(results)
     } else {
-      res.send('Not results')
+      res.send('No hay resultados')
     }
   })
 })
@@ -45,6 +45,7 @@ router.get('/', verificarToken, (req, res, next) => {
 // =========================================================
 // OBTENER UN USUARIO
 // =========================================================
+// /:id => dni del usuario
 router.get('/:id', verificarToken, (req, res) => {
   const { id } = req.params
   // req.headers recibe las cabeceras
@@ -70,7 +71,7 @@ router.get('/:id', verificarToken, (req, res) => {
       res.json(result)
     } else {
     // res.send('Not result')
-      return res.status(404).send('No user found')
+      return res.status(404).send('Usuario no encontrado')
     }
   })
 })
@@ -100,16 +101,16 @@ router.post('/', (req, res, next) => {
 
           // utilizamos el modulo que tiene la funcion para formatear el nombre
           // console.log(req.body.nombre)
-          const nombreMayus = await moduloFormatear.formatear(req.body.nombre)
+          const nombreMayus = await formatearTexto(req.body.nombre)
           // console.log(nombreMayus)
 
           // utilizamos el modulo que tiene la funcion para formatear el apellido
           // console.log(req.body.apellido)
-          const apellidoMayus = await moduloFormatear.formatear(req.body.apellido)
+          const apellidoMayus = await formatearTexto(req.body.apellido)
           // console.log(apellidoMayus)
 
           // utilizamos el modulo que tiene la funcion para encriptar una password
-          const pass = await moduloEncriptar.encriptar(req.body.clave)
+          const pass = await encriptarPassword(req.body.clave)
 
           const usuarioObj = {
             nombre: nombreMayus,
@@ -141,13 +142,14 @@ router.post('/', (req, res, next) => {
 
                 // creamos un token con el dni del usuario y la clave secreta
                 const token = jwt.sign({ dni: result[0].dni }, process.env.SECRET, {
-                  expiresIn: 60 * 60 * 24
+                  expiresIn: 60 * 60 * 1
+                  // 60 * 60 * 24 expira en 24 horas
                 })
 
                 // despues de crear al usuario devolvemos los datos del usuario y el token
                 res.json({ result: result, auth: true, token })
               } else {
-                res.send('Not result')
+                res.send('No hay resultados')
               }
             })
           })
@@ -180,7 +182,7 @@ router.put('/:id', verificarToken, async (req, res) => {
   // const decoded = jwt.verify(token, process.env.SECRET)
   // console.log(decoded)
   // utilizamos el modulo que tiene la funcion para encriptar una password
-  const pass = await moduloEncriptar.encriptar(clave)
+  const pass = await encriptarPassword(clave)
 
   const sql = `UPDATE asistencia2.usuario SET nombre = '${nombre}', apellido = '${apellido}', dni = '${dni}', nombreUsuario = '${nombreUsuario}', clave = '${pass}', imei = '${imei}', id_rol = '${id_rol}' WHERE dni = '${id}'`
   connection.query(sql, (error) => {

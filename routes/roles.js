@@ -1,8 +1,15 @@
 const { Router } = require('express')
 const router = Router()
 const connection = require('../database')
-
-router.get('/', (req, res) => {
+// =========================================================
+// FUNCIONES
+// =========================================================
+var formatearTexto = require('../middlewares/formatear')
+const verificarToken = require('../middlewares/verificarToken')
+// =========================================================
+// OBTENER TODOS LOS ROLES
+// =========================================================
+router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
   const sql = 'SELECT * FROM asistencia2.rol_usuario'
   connection.query(sql, (error, results) => {
@@ -12,12 +19,16 @@ router.get('/', (req, res) => {
     if (results.length > 0) {
       res.json(results)
     } else {
-      res.send('Not result')
+      res.send('No hay resultados')
     }
   })
 })
 
-router.get('/:id', (req, res) => {
+// =========================================================
+// OBTENER UN ROL
+// =========================================================
+// /:id => id del rol
+router.get('/:id', verificarToken, (req, res, next) => {
   //  res.send('GET usuario')
   const { id } = req.params
   const sql = `SELECT * FROM asistencia2.rol_usuario where id_rol = ${id}`
@@ -28,21 +39,20 @@ router.get('/:id', (req, res) => {
     if (result.length > 0) {
       res.json(result)
     } else {
-      res.send('Not result')
+      return res.status(404).send('Rol no encontrado')
     }
   })
 })
 
-router.post('/', (req, res) => {
+// =========================================================
+// CREAR UN ROL
+// =========================================================
+router.post('/', verificarToken, async (req, res, next) => {
   // res.send('POST usuarios')
-  // obtenemos el valor de la descripcion
-  let descripcion = req.body.descripcion
-  // eliminamos los espacios
-  descripcion = descripcion.trim()
-  // lo pasamos a mayusculas
-  const descripcionMayus = descripcion.toUpperCase()
-  // console.log(descripcionMayus)
-  
+  // utilizamos el modulo que tiene la funcion para formatear el nombre
+  // console.log(req.body.nombre)
+  const descripcionMayus = await formatearTexto(req.body.descripcion)
+
   const sql = `SELECT * FROM asistencia2.rol_usuario where descripcion = '${descripcionMayus}'`
   connection.query(sql, (error, result) => {
     if (error) {
@@ -66,7 +76,11 @@ router.post('/', (req, res) => {
   })
 })
 
-router.put('/:id', (req, res) => {
+// =========================================================
+// ACTUALIZAR UN ROL
+// =========================================================
+// /:id => id del rol
+router.put('/:id', verificarToken, (req, res, next) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { descripcion } = req.body
@@ -80,16 +94,31 @@ router.put('/:id', (req, res) => {
   })
 })
 
-router.delete('/:id', (req, res) => {
+// =========================================================
+// ELIMINAR UNA INSTITUCIN
+// =========================================================
+// /:id => id del rol a eliminar
+router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
-  const sql = `DELETE FROM asistencia2.rol_usuario WHERE id_rol = ${id}`
-
-  connection.query(sql, (error) => {
+  const sql = `SELECT * FROM asistencia2.rol_usuario WHERE id_rol = '${id}'`
+  connection.query(sql, (error, result) => {
     if (error) {
       throw error
     }
-    res.send('rol eliminado!')
+
+    if (result.length > 0) {
+      const sql = `DELETE FROM asistencia2.rol_usuario WHERE id_rol = '${id}'`
+
+      connection.query(sql, (error) => {
+        if (error) {
+          throw error
+        }
+        res.send('Rol eliminado!')
+      })
+    } else {
+      res.send('Rol no encontrado')
+    }
   })
 })
 

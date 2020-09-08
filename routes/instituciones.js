@@ -1,8 +1,15 @@
 const { Router } = require('express')
 const router = Router()
 const connection = require('../database')
-
-router.get('/', (req, res) => {
+// =========================================================
+// FUNCIONES
+// =========================================================
+var formatearTexto = require('../middlewares/formatear')
+const verificarToken = require('../middlewares/verificarToken')
+// =========================================================
+// OBTENER TODOS LAS INSTITUCIONES
+// =========================================================
+router.get('/', verificarToken, (req, res, next) => {
   // res.send('GET usuarios')
   const sql = 'SELECT * FROM asistencia2.institucion'
   connection.query(sql, (error, results) => {
@@ -12,15 +19,18 @@ router.get('/', (req, res) => {
     if (results.length > 0) {
       res.json(results)
     } else {
-      res.send('Not result')
+      res.send('No hay resultados')
     }
   })
 })
 
-router.get('/:id', (req, res) => {
-  //  res.send('GET usuario')
+// =========================================================
+// OBTENER UNA INSTITUCION
+// =========================================================
+// /:id => cue de la institucion
+router.get('/:id', verificarToken, (req, res, next) => {
   const { id } = req.params
-  const sql = `SELECT * FROM asistencia2.institucion where id_institucion = ${id}`
+  const sql = `SELECT * FROM asistencia2.institucion where cue = ${id}`
   connection.query(sql, (error, result) => {
     if (error) {
       throw error
@@ -28,15 +38,18 @@ router.get('/:id', (req, res) => {
     if (result.length > 0) {
       res.json(result)
     } else {
-      res.send('Not result')
+      return res.status(404).send('Institucion no encontrada')
     }
   })
 })
 
-router.post('/', (req, res) => {
+// =========================================================
+// CREAR UNA INSTITUCION
+// =========================================================
+router.post('/', verificarToken, (req, res, next) => {
   // res.send('POST usuarios')
   const sql = `SELECT * FROM asistencia2.institucion where cue = ${req.body.cue}`
-  connection.query(sql, (error, result) => {
+  connection.query(sql, async (error, result) => {
     if (error) {
       throw error
     }
@@ -45,12 +58,9 @@ router.post('/', (req, res) => {
     } else {
       const sql = 'INSERT INTO asistencia2.institucion SET ?'
 
-      // obtenemos el valor del nombre
-      let nombre = req.body.nombre
-      // eliminamos los espacios
-      nombre = nombre.trim()
-      // lo pasamos a mayusculas
-      const nombreMayus = nombre.toUpperCase()
+      // utilizamos el modulo que tiene la funcion para formatear el nombre
+      // console.log(req.body.nombre)
+      const nombreMayus = await formatearTexto(req.body.nombre)
 
       const institucionObj = {
         nombre: nombreMayus,
@@ -70,11 +80,15 @@ router.post('/', (req, res) => {
   })
 })
 
-router.put('/:id', (req, res) => {
+// =========================================================
+// ACTUALIZAR UNA INSTITUCION
+// =========================================================
+// /:id => cue de la institucion
+router.put('/:id', verificarToken, (req, res) => {
   // res.send('PUT usuario')
   const { id } = req.params
   const { nombre, sigla, cue, geolocalizacion, direccionCalle, direccionAltura } = req.body
-  const sql = `UPDATE asistencia2.institucion SET nombre = '${nombre}', sigla = '${sigla}', cue = '${cue}', geolocalizacion = '${geolocalizacion}', direccionCalle = '${direccionCalle}', direccionAltura = '${direccionAltura}' WHERE id_institucion = '${id}'`
+  const sql = `UPDATE asistencia2.institucion SET nombre = '${nombre}', sigla = '${sigla}', cue = '${cue}', geolocalizacion = '${geolocalizacion}', direccionCalle = '${direccionCalle}', direccionAltura = '${direccionAltura}' WHERE cue = '${id}'`
 
   connection.query(sql, (error) => {
     if (error) {
@@ -84,16 +98,32 @@ router.put('/:id', (req, res) => {
   })
 })
 
-router.delete('/:id', (req, res) => {
+// =========================================================
+// ELIMINAR UNA INSTITUCION
+// =========================================================
+// /:id => cue de la institucion a eliminar
+router.delete('/:id', verificarToken, (req, res, next) => {
   // res.send('DELETE user')
   const { id } = req.params
-  const sql = `DELETE FROM asistencia2.institucion WHERE id_institucion = ${id}`
-
-  connection.query(sql, (error) => {
+  // Query
+  const sql = `SELECT * FROM asistencia2.institucion WHERE cue = '${id}'`
+  connection.query(sql, (error, result) => {
     if (error) {
       throw error
     }
-    res.send('Institucion eliminada!')
+
+    if (result.length > 0) {
+      const sql = `DELETE FROM asistencia2.institucion WHERE cue = '${id}'`
+
+      connection.query(sql, (error) => {
+        if (error) {
+          throw error
+        }
+        res.send('Institucion eliminada!')
+      })
+    } else {
+      res.send('Institucion no encontrada')
+    }
   })
 })
 
